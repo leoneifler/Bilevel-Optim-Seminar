@@ -1,0 +1,51 @@
+\tikzset{
+	%Define standard arrow tip
+	>=stealth',
+	%Define style for different line styles
+	help lines/.style={dashed, thick},
+	axis/.style={<->},
+	important line/.style={thick},
+	connection/.style={thick, dotted},
+}
+\begin{tikzpicture}
+	\coordinate (y) at (0,6);
+	\coordinate (x) at (6,0);
+	\draw[<->] (y) node[above] {$y$} -- (0,0) --  (x) node[right]{$x$};
+	
+	\foreach \x in {0,...,5}
+	\draw (\x,1pt) -- (\x,-3pt)
+	node[anchor=north] {\x};
+	\foreach \y in {0,...,5}
+	\draw (1pt,\y) -- (-3pt,\y) 
+	node[anchor=east] {\y}; 
+
+	\coordinate (A) at (1.278,3.444){};
+	\coordinate (B) at (3.026,3.882){};
+	\coordinate (C) at (3.986,3.210){};
+	\coordinate (D) at (2.895,0.211){};
+	
+	\draw[important line] (A) node[left]{$A$} -- (B) node[above]{$B$}-- (C) node[right]{$C$} -- (D)node[right]{$D$} -- (A);
+	
+	\filldraw 
+	(2,3) circle (1.5pt) node[align=right,   above] {a}
+	(2,2) circle (1.5pt) node[align=right,   above] {b}
+	(3,3) circle (1.5pt) node[align=right,   above] {c}
+	(3,2) circle (1.5pt) node[align=right,   above] {d}
+	(3,1) circle (1.5pt) node[align=right,   above] {e};
+	
+	\filldraw[fill=red, opacity=0.5, visible on=<2>] (A)  -- (B) -- (C)  -- (D) -- (A);
+	\node[red, visible on = <2>] (S) at (2.5,5) {$S$};
+	
+	\filldraw[red, visible on=<3>] (2,2) circle(1.5pt);
+	\filldraw[red, visible on=<3>] (2,3) circle(1.5pt);
+	\filldraw[red, visible on=<3>] (2,1pt) -- (2,-3pt) node[anchor=north, red, visible on=<3>]{$2$};
+	\node[red, visible on = <3>] (R) at (2.5,5) {$\Omega_y(2)$};
+	
+	\filldraw[red, visible on=<4>] (2,3) circle(1.5pt);
+	\filldraw[red, visible on=<4>] (2,1pt) -- (2,-3pt) node[anchor=north, red, visible on=<4>]{$2$};
+	\node[red, visible on = <4>] (R) at (2.5,5) {$R_y(2)$};
+	
+	\filldraw[red, visible on=<5>] (2,3) circle(1.5pt);
+	\filldraw[red, visible on=<5>] (3,3) circle(1.5pt);
+	\node[red, visible on = <5>] (R) at (2.5,5) {$IR$};
+	\end{tikzpicture}

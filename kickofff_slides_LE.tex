@@ -1,0 +1,150 @@
+\documentclass[11pt]{beamer}
+
+
+
+\usepackage[utf8]{inputenc} %unix-windows-compatible
+\usepackage{german}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+%\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage[section]{placeins}
+\usepackage{caption} % to set figure captions in minipage
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{matrix,chains,scopes,positioning,arrows,fit}
+\usepackage{commath}
+\usepackage{kpfonts}
+\usepackage{algorithm}
+\newcommand{\pushcode}[1][1]{\hskip\dimexpr#1\algorithmicindent\relax}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{tcolorbox}
+\usepackage{lipsum}
+
+% (captionof{figure}{..}) Margins
+%\topmargin=-0.45in
+%\evensidemargin=0in
+%\oddsidemargin=0in
+%\textwidth=6.5in
+%\textheight=9.0in
+%\headsep=0.25in
+
+%\linespread{1.1} % Line spacing
+% tikz visibility on frames
+\tikzset{
+	invisible/.style={opacity=0},
+	visible on/.style={alt={#1{}{invisible}}},
+	alt/.code args={<#1>#2#3}{%
+		\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+	},
+}
+% Set up the header and footer
+
+
+
+\newtheorem{mydef}{Definition}
+\newtheorem{theo}{Theorem}
+\newtheorem{cor}{Corollary}
+
+
+\makeatother
+\setbeamertemplate{footline}
+{
+	\leavevmode%
+	\hbox{%
+		\begin{beamercolorbox}[wd=.4\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+			\usebeamerfont{author in head/foot}\insertshortauthor
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=.6\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+			\usebeamerfont{title in head/foot}\insertshorttitle\hspace*{3em}
+			\insertframenumber{} / \inserttotalframenumber\hspace*{1ex}
+		\end{beamercolorbox}}%
+		\vskip0pt%
+	}
+	\makeatletter
+	\setbeamertemplate{navigation symbols}{}
+	
+	\AtBeginSection[]
+	{
+		\begin{frame}[plain]
+			\frametitle{Table of Contents}
+			\tableofcontents[currentsection]
+		\end{frame}
+	}
+	
+	
+\begin{document}
+
+
+	\title %optional
+	{Enhanced Exact Algorithms for Discrete Bilevel Linear Problems	}
+	\subtitle{Seminar: Selected Topics in Bilevel Optimization}
+	
+	\author % (optional, for multiple authors)
+	{Leon Eifler}
+	
+	\institute % (optional)
+	{
+	
+		Institut f"ur Mathematik\\
+		Technische Universit"at Berlin
+		
+	}
+	
+	\date % (optional)
+	{13.05.2016}
+	
+
+	\begin{frame}[plain]
+	\titlepage
+
+	\end{frame}
+
+\begin{frame}	
+	\frametitle{Problem}
+	\begin{alignat*}{2}
+		\text{(DBLP)} \quad \min_{x,y} F(x,y) &= c_1^Tx +c_2^Ty \\
+		\text{s.t.} \quad &Cx + Dy \le e \\
+		&x \in \mathbb{Z}^n_+ \\
+		&y \in \arg \min_y f(y) &&= d^T y \\
+		&\text{s.t.} &&Ax+By \le b \\
+		& &&y \in \mathbb{Z}^m_+
+	\end{alignat*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Single Level Linear Problem}
+	\begin{equation*}
+		S = \{(x,y) | x \in \mathbb{Z}^m_+, y \in \mathbb{Z}^m_+, Cx+Dy \le e, Ax + By \le b \}
+	\end{equation*}
+	\begin{align*}
+		\text{(SLP)} \quad &\min_{x,y} F(x,y) = c_1^Tx +c_2^Ty \\
+		&\text{s.t.} \quad (x,y) \in S.
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Cutting Plane Method}
+	\begin{itemize}
+		\item Solve (SLP). Get an integer solution $(\bar x, \bar y)$.
+		\item If $(\bar x, \bar y)$ is bilevel infeasible, generate cut to eliminate bilevel-infeasible solutions at $\bar x$.
+		\item Cut turns (SLP) into bilevel problem with continuous follower variables. 
+		\item This can again be transformed into a single-level problem
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Branch and Cut Method}
+	\begin{itemize}
+		\item Divide $S$ into smaller constrained regions $S', S''$.
+		\item Solve both subproblems using Branch and Cut.
+		\item Optimal solution is likely to be in $S'$. 
+		\item $S''$ might be discarded based on relaxation and upper bound of $S'$.
+	\end{itemize}
+\end{frame}
+
+\end{document}

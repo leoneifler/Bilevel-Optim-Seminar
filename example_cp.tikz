@@ -1,0 +1,51 @@
+\tikzset{
+	%Define standard arrow tip
+	>=stealth',
+	%Define style for different line styles
+	help lines/.style={dashed, thick},
+	axis/.style={<->},
+	important line/.style={thick},
+	connection/.style={thick, dotted},
+}
+\begin{tikzpicture}
+	\coordinate (y) at (0,6);
+	\coordinate (x) at (6,0);
+	\draw[<->] (y) node[above] {$y$} -- (0,0) --  (x) node[right]{$x$};
+	
+	\foreach \x in {0,...,5}
+	\draw (\x,1pt) -- (\x,-3pt)
+	node[anchor=north] {\x};
+	\foreach \y in {0,...,5}
+	\draw (1pt,\y) -- (-3pt,\y) 
+	node[anchor=east] {\y}; 
+
+	\coordinate (A) at (1.278,3.444){};
+	\coordinate (B) at (3.026,3.882){};
+	\coordinate (C) at (3.986,3.210){};
+	\coordinate (D) at (2.895,0.211){};
+	
+	\draw[important line] (A) node[left]{$A$} -- (B) node[above]{$B$}-- (C) node[right]{$C$} -- (D)node[right]{$D$} -- (A);
+	
+	\filldraw 
+	(2,3) circle (1.5pt) node[align=right,   above] {a}
+	(2,2) circle (1.5pt) node[align=right,   above] {b}
+	(3,3) circle (1.5pt) node[align=right,   above] {c}
+	(3,2) circle (1.5pt) node[align=right,   above] {d}
+	(3,1) circle (1.5pt) node[align=right,   above] {e};
+	
+	\filldraw[red, visible on=<2>] (3,1) circle(1.5pt);
+	\node[align=left, visible on=<2>] at (3,5){Optimal Solution of SLP \\ Not bilevel feasible};
+	
+	\draw[red, very thick, visible on=<3->] (3,0.5) -- (3,2.9);
+	\node[align=left, visible on=<3>] at (3,5){Cut off all bilevel infeasible \\ solutions for this x};
+	
+	\filldraw[red, visible on=<4>] (2,2) circle(1.5pt);
+	\node[align=left, visible on=<4>] at (3,5){Optimal Solution of new SLP};
+	
+	\filldraw[red, very thick, visible on=<5->] (2,2) -- (2,2.9);
+	\node[align=left, visible on=<5>] at (3,5){Add new cut};
+	
+	\filldraw[red, visible on=<6>] (2,3) circle(1.5pt);
+	\node[align=left, visible on=<6>] at (3,5){Optimal Solution of relaxation \\ is bilevel feasible};
+	
+	\end{tikzpicture}
