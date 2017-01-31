@@ -1,0 +1,194 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Programming/Coding Assignment
+% LaTeX Template
+%
+% This template has been downloaded from:
+% http://www.latextemplates.com
+%
+% Original author:
+% Ted Pavlic (http://www.tedpavlic.com)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage[utf8]{inputenc} %unix-windows-compatible
+\usepackage{german}
+\usepackage{commath}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+%\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage[section]{placeins}
+\usepackage{caption} % to set figure captions in minipage
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{tikz}
+\usepackage{algorithm}
+\newcommand{\pushcode}[1][1]{\hskip\dimexpr#1\algorithmicindent\relax}
+\usepackage[noend]{algpseudocode}
+
+% Set up the header and footer
+\pagestyle{fancy}
+
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs
+\renewcommand\thesubsection{\thesection.\alph{subsection}}
+\newcommand*\tageq{\refstepcounter{equation}\tag{\theequation}}
+
+
+\newtheorem{mydef}{Definition}
+\newtheorem{theo}{Theorem}
+\newtheorem{cor}{Corollary}
+%----------------------------------------------------------------------------------------
+%	CODE INCLUSION CONFIGURATION
+%----------------------------------------------------------------------------------------
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\lstset{language=Python, 
+breaklines=true, 
+tabsize=4,
+basicstyle=\ttm,
+otherkeywords={self},            
+keywordstyle=\ttb\color{deepblue},
+emph={MyClass,__init__},         
+emphstyle=\ttb\color{deepred},   
+stringstyle=\color{deepgreen},
+frame=tb,                        
+showstringspaces=false            
+}% 
+%\setcounter{secnumdepth}{0} % Removes default section numbers
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\Title}{Enhanced exact algorithms for discrete bilevel linear
+	problems} % Assignment title
+\newcommand{\Seminar}{Seminar: Selected Topics in bilevel optimization} % Course/class
+\newcommand{\Author}{Leon Eifler}
+\newcommand{\fett}[1]{\mathbf #1}
+\newcommand{\Real}{\mathbb{R}}
+% Your name
+%\newcommand{\ID}{327468} % Your name
+
+\title{
+	\centering
+	\begin{figure*}[!hb]
+		\begin{minipage}{1\textwidth}
+			\hspace*{-.06\linewidth}
+		\end{minipage} 
+	\end{figure*}
+	\vspace{5cm}
+	{\huge\textbf{\Title}}\\ 
+	\vspace{1cm}
+	{\huge{\Seminar}\\}
+	\vspace{0.6cm} 
+	{\mdseries\large \Author }
+	\vspace{1cm}
+}
+
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+	
+	\maketitle
+	\newpage
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+\section{Overview}
+
+We present the work of Caramia and Mari \cite{Caramia2015}, who introduced two new exact algorithms for solving bilevel linear problems in which all the variables are discrete. These Discrete Bilevel Linear Problems (DBLPs) can be defined as:
+
+		\begin{alignat*}{2}
+		\text{(DBLP)} \quad \min_{x,y} F(x,y) &= c_1^Tx +c_2^Ty \\
+		\text{s.t.} \quad &Cx + Dy \le e \\
+		&x \in \mathbb{Z}^n_+ \\
+		&y \in \arg \min_y f(y) &&= d^T y \\
+		&\text{s.t.} &&Ax+By \le b \\
+		& &&y \in \mathbb{Z}^m_+
+		\end{alignat*}
+		
+The first Algorithm is a cutting plane method, where each added inequality separates multiple bilevel infeasible solutions. The second is a branch and cut method that exploits a geometric property of bilevel linear problems. 
+The computational results are compared to the method proposed by DeNegre and Ralphs \cite{DeNegre2009}.
+
+\section{Preliminaries}
+
+We will introduce notation that we will need when discussing feasible solutions of (DBLP). 
+First we define the \textit{constrained region}, where we omit integrality requirements on the variables.
+\begin{equation*}
+	S = \{(x,y) \ | \ x \in \mathbb{Z}^m_+, y \in \mathbb{Z}^m_+, Cx+Dy \le e, Ax + By \le b \}
+\end{equation*}
+For each possible value of the leader variables $x$ we define the \textit{followers feasible set}
+\begin{equation*}
+	\Omega_y(x) = \{y \ | \ y \in \mathbb{Z}^m_+, By \le b - Ax \}
+\end{equation*}
+and the set of all $y$ that minimize the followers objective, called the \textit{reaction set}
+\begin{equation*}
+	R_y(x) = \arg \min_y \{f(y) \ \text{s.t. } y \in \Omega_y(x).
+\end{equation*}
+Finally the set of all bilevel feasible solutios, the \textit{inducible region}, is defined as
+\begin{equation*}
+	IR = \{(x,y) \ | \ x \in \mathbb{Z}^n_+, Cx+Dy \le e, y \in R_y(x)\}.
+\end{equation*}
+The relaxation that we will use to solve (DBLP) we call the Single Level linear Problem (SLP), defined as
+\begin{align*}
+\text{(SLP)} \quad &\min_{x,y} F(x,y) = c_1^Tx +c_2^Ty \\
+&\text{s.t.} \quad (x,y) \in S.
+\end{align*} 
+Note that this is indeed a relaxation as every optimal solution of (SLP) is a lower bound to the optimal solution of (DBLP).
+
+\section{A cutting plane method}
+
+The basic idea of the cutting plane method can be described as follows
+\begin{description}
+	\item[Solve relaxation] Solve (SLP) and obtain an optimal solution $(\bar x, \bar y)$.
+	If it is bilevel feasible, then (DBLP) is solved.
+	\item[Add inequality] If $(\bar x, \bar y)$ is not bilevel feasible, add an inequality to (SLP) that cuts off all bilevel infeasible solutions at $\bar x$. Then solve the new relaxation again and repeat until (DBLP) is solved.
+\end{description}
+
+We will now give a detailed explanation of this inequality. Let $(\bar x, \bar y)$ be an optimal solution of (SLP) that is not bilevel feasible. Then there exists a bilevel feasible point $(\bar x, \hat y)$ such that $f(\hat y) < f(\bar y)$. Now we introduce a valid inequality that is only active at $x = \bar x$ 
+\begin{equation*}
+		f(y) \le f(\hat y) + L \|x-\bar x\|_{\infty}.
+\end{equation*}
+This non-linear inequality can be reformulated as an optimization problem 
+\begin{align*}
+f(y) \le f(\hat y) + L \hat z, 
+\end{align*}
+where $\hat z$ is the optimal solution of 
+\begin{align*}
+(P_{\hat z}) \quad \min_{z} z \\
+\text{s.t.} \quad z &\ge x_i - \bar x_i \quad i = 1,\dots,n \\
+z &\ge \bar x_i - x_i \quad i = 1,\dots,n.
+\end{align*}
+Adding this to (SLP) turns it into a bilevel problem itself, but with continious follower variables.
+Note that bilevel problems with continuous follower variables can be transformed into a single level problem using KKT conditions, as described by Fortuny-Amat
+and McCarl \cite{Fortuny-Amat1981}.
+The advantage of this cutting plane method is that a large number of bilevel-infeasible solutions are cut off at each iteration. However, as each inequality adds a follower problem with $2n$ constraints the iterations are computationally expensive.
+
+A possible modification to reduce the number of added follower problems is to remove added inequalities under certain conditions. 
+
+\section{A branch and cut algorithm}
+
+
+\section{Computational Analysis}
+
+
+	\newpage
+	\bibliographystyle{abbrv}
+	\bibliography{Bibliography}
+\end{document}
