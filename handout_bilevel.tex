@@ -17,7 +17,6 @@
 \documentclass{article}
 
 \usepackage[utf8]{inputenc} %unix-windows-compatible
-\usepackage{german}
 \usepackage{commath}
 \usepackage{fancyhdr} % Required for custom headers
 \usepackage{lastpage} % Required to determine the last page for the footer
@@ -115,10 +114,10 @@ showstringspaces=false
 We present the work of Caramia and Mari \cite{Caramia2015}, who introduced two new exact algorithms for solving bilevel linear problems in which all the variables are discrete. These Discrete Bilevel Linear Problems (DBLPs) can be defined as:
 
 		\begin{alignat*}{2}
-		\text{(DBLP)} \quad \min_{x,y} F(x,y) &= c_1^Tx +c_2^Ty \\
-		\text{s.t.} \quad &Cx + Dy \le e \\
+		\text{(DBLP)} \quad \min_{x,y} F(x,y) &= c_1^Tx +c_2^Ty&& \\
+		\text{s.t.} \quad &Cx + Dy \le e&& \\
 		&x \in \mathbb{Z}^n_+ \\
-		&y \in \arg \min_y f(y) &&= d^T y \\
+		&y \in \arg \min_y&& f(y) = d^T y \\
 		&\text{s.t.} &&Ax+By \le b \\
 		& &&y \in \mathbb{Z}^m_+
 		\end{alignat*}
@@ -141,7 +140,7 @@ and the set of all $y$ that minimize the followers objective, called the \textit
 \begin{equation*}
 	R_y(x) = \arg \min_y \{f(y) \ \text{s.t. } y \in \Omega_y(x).
 \end{equation*}
-Finally the set of all bilevel feasible solutios, the \textit{inducible region}, is defined as
+Finally the set of all bilevel feasible solutions, the \textit{inducible region}, is defined as
 \begin{equation*}
 	IR = \{(x,y) \ | \ x \in \mathbb{Z}^n_+, Cx+Dy \le e, y \in R_y(x)\}.
 \end{equation*}
@@ -153,6 +152,7 @@ The relaxation that we will use to solve (DBLP) we call the Single Level linear 
 Note that this is indeed a relaxation as every optimal solution of (SLP) is a lower bound to the optimal solution of (DBLP).
 
 \section{A cutting plane method}
+\label{cp}
 
 The basic idea of the cutting plane method can be described as follows
 \begin{description}
@@ -175,19 +175,70 @@ where $\hat z$ is the optimal solution of
 \text{s.t.} \quad z &\ge x_i - \bar x_i \quad i = 1,\dots,n \\
 z &\ge \bar x_i - x_i \quad i = 1,\dots,n.
 \end{align*}
-Adding this to (SLP) turns it into a bilevel problem itself, but with continious follower variables.
+Adding this to (SLP) turns it into a bilevel problem itself, but with continuous follower variables.
 Note that bilevel problems with continuous follower variables can be transformed into a single level problem using KKT conditions, as described by Fortuny-Amat
 and McCarl \cite{Fortuny-Amat1981}.
 The advantage of this cutting plane method is that a large number of bilevel-infeasible solutions are cut off at each iteration. However, as each inequality adds a follower problem with $2n$ constraints the iterations are computationally expensive.
 
-A possible modification to reduce the number of added follower problems is to remove added inequalities under certain conditions. 
+A possible modification to reduce the number of added follower problems is to remove added inequalities under certain conditions. If a bilevel infeasible solution $(\bar x, \bar y)$ was cut off and the next bilevel infeasible solution $(x',y')$ is far from  $(\bar x, \bar y)$ in $S$, then it is reasonable that the descent direction of the objective leads away from $(\bar x, \bar y)$.
+Therefore the subproblem that $P_{\bar z}$ that cut off $(\bar x, \bar y)$ is replaced by the inequality $F(x,y) \ge F(x',y')$. To avoid cycling, if $P_{\bar z}$ is reintroduced at some point, it will not be dropped again.
+\newpage
 
 \section{A branch and cut algorithm}
 
+The constrained region $S$ that is used as a relaxation to solve DBLP's usually contains a large amount of integer points that are not bilevel feasible. The motivation behind the branch and cut algorithm presented here is to split the constrained region into two parts $S',S''$, where $S'$ is likely to contain the optimal solution.
+We first solve the max-min problem:
+	\begin{align*}
+	(BLP^{max}_{min}) \quad \max_{x,y} f(y) &= d^T y \\
+	\text{s.t.} \quad &x \in \mathbb{R}^n_{+} \\
+	&y \in \arg \min_{y} f(y) = d^Ty \\
+	&\text{s.t.} \quad Ax + By \le b \\
+	& \quad y \in \mathbb{R}^m_{+}
+	\end{align*}
+So we take the maximum of the followers objective over the set of all continuous bilevel feasible points. Let $(\hat x, \hat y)$ the the optimal solution of $BLP^{max}_{min}$. Then the inequality
+\begin{equation*}
+	f(y) \le \lceil f(\hat y) \rceil
+\end{equation*}
+is valid for bilevel linear problems. For the corresponding DBLP it might not be valid but it is likely that most discrete bilevel feasible points fulfill $f(y) \le \lceil f(\hat y) \rceil$.
+Therefore we split the constrained region $S$ into 
+\begin{align*}
+	S' &= \{(x,y) \in S \ | \ f(y) \le \lceil f(\hat y) \rceil \}, \\
+	S'' &= \{(x,y) \in S \ | \ f(y) \ge \lceil f(\hat y) \rceil + 1\}.
+\end{align*}
+	\begin{figure}
+		\centering
+		\input{inducible-handout.tikz}
+		\caption{Example of splitting of $S$. Inducible region of linear problem is (A - B - C)}
+	\end{figure}
+Then the framework for the branch and cut algorithm is the following
+	\begin{itemize}
+		\item[Step 0]Determine $S'$ and $S''$.
+		\item[Step 1]Solve the subproblem $(DBLP')$ induced by $S'$. Use continuous single-level relaxation. 
+		\item[Step 2]Branch if solution is not integral, add cut if solution is integral but not bilevel feasible. Repeat until $(DBLP')$ is solved.
+		\item[Step 3]Compute $LB''$ for problem $(DBLP'')$ induced by $S''$. If this is worse than the $UB$ found before, stop.
+		Otherwise solve $(DBLP'')$.
+	\end{itemize}
+Note that this is just a general framework that can be used with any cutting plane method and any branching rule. The authors use the valid inequality proposed by DeNegre and Ralphs \cite{DeNegre2009} to cut off bilevel infeasible points. 
+This general framework can be used to incorporate the cutting plane method from section 3 in a hybrid branch and cut algorithm. The authors propose to use branch and cut to solve $(DBLP')$ and then use the cutting plane method for $(DBLP'')$. In Step 3 we expect that we just have to find a decent lower bound for $(DBLP'')$ in order to prove optimality for the solution found in Step 2. The cutting plane method is efficient in finding tight lower bounds. 
 
 \section{Computational Analysis}
 
+The cutting plane method (CP) as well as the modified version where used cuts are deleted (MCP) are compared to the cutting plane method by DeNegre and Ralphs (DN\_CP).
+In the same way the branch and cut algorithm (BC) as well as the hybrid variant (HBC) are compared to the branch and cut algorithm by DeNegre and Ralphs (DN\_BC).
 
+The authors implemented all algorithms including (BC) and (DN\_BC) in C programming language and tested them on a PC Pentium Core 2 Duo with a 2 GHz processor and 1 GB RAM, with CPLEX 12.3 as the solver. 
+Two sets of test instances were used, a set of random instances and a set of modified MIPLIB 2010 instances. 
+The cutting plane methods need on average $90\%$ less computational time than (DN\_CP). For the branch and cut algorithms both (BC) and (HBC) were faster than (DN\_BC), where the difference in running time ranges from $-0.5\%$ to $-70.6\%$. The overall comparison on both sets can be seen in the following two diagrams.
+\begin{figure}
+	\centering
+	\includegraphics[width = 0.4\textheight]{run-times_2.pdf}
+	\caption{Computational comparison for random set}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[height = 0.4\textheight]{run-times.pdf}
+	\caption{Computational comparison for miplib set}
+\end{figure}
 	\newpage
 	\bibliographystyle{abbrv}
 	\bibliography{Bibliography}

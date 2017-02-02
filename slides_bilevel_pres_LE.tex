@@ -192,7 +192,7 @@
 		&\text{s.t.} \quad (x,y) \in S.
 	\end{align*}
 	\item This is a relaxation of DBLP
-	\item Dropping integrality and mantaining bilevel structure is not a relaxation
+	\item Dropping integrality and maintaining bilevel structure is not a relaxation
 	\end{itemize}
 \end{frame}
 
@@ -313,7 +313,7 @@ This can again be reformulated as a single level problem.
 		\item[Step 0]Determine $S'$ and $S''$.
 		\item[Step 1]Solve the subproblem $(DBLP')$ induced by $S'$. Use continuous single-level relaxation. 
 		\item[Step 2]Branch if solution is not integral, add cut if solution is integral but not bilevel feasible
-		\item[Step 3]Compute $LB''$ for problem $(DBLP'')$ induced by $S''$. If this is worse than the $UB$ found before stop.
+		\item[Step 3]Compute $LB''$ for problem $(DBLP'')$ induced by $S''$. If this is worse than the $UB$ found before, stop.
 		Otherwise solve $(DBLP'')$.
 	\end{itemize}
 \end{frame}
@@ -326,7 +326,7 @@ This can again be reformulated as a single level problem.
 			\item Use cuts that are computationally less expensive
 			\item Intuition that $S'$ contains few bilevel-infeasible integral points
 		\end{itemize}
-		\item Use previosly introduced cutting plane method for $(DBLP'')$
+		\item Use previously introduced cutting plane method for $(DBLP'')$
 		\begin{itemize}
 			\item Yields strong bounds quickly
 			\item Possibly prune whole subproblem
@@ -347,32 +347,36 @@ This can again be reformulated as a single level problem.
 	\end{itemize}
 \end{frame}
 \begin{frame}
-	\frametitle{Cutting Plane Algorithm}
-	\begin{columns}[T]
-		\begin{column}{.48\textwidth}
-	\begin{figure}
-		\includegraphics[width=\textwidth]{table_cp.png}
-		\caption{Comparison on random set}
-	\end{figure}
-	\end{column}
-	\begin{column}{.48\textwidth}
-	\begin{figure}
-		\includegraphics[width=\textwidth]{table_cp_miplip.png}
-		\caption{Comparison on miplip set}
-	\end{figure}
-	\end{column}
-	\end{columns}
+	\frametitle{Random Set}
+%	\begin{columns}[T]
+%		\begin{column}{.48\textwidth}
+%	\begin{figure}
+%		\includegraphics[width=\textwidth]{table_cp.png}
+%		\caption{Comparison on random set}
+%	\end{figure}
+%	\end{column}
+%	\begin{column}{.48\textwidth}
+%	\begin{figure}
+%		\includegraphics[width=\textwidth]{table_cp_miplip.png}
+%		\caption{Comparison on miplip set}
+%	\end{figure}
+%	\end{column}
+%	\end{columns}
+\centering
+\includegraphics[height=0.8\textheight]{run-times_2.pdf}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Branch and Cut Algorithm}
-	\begin{figure}
-		\includegraphics[width=\textwidth]{table_bc_random.png}
-		\caption{Comparison on random set}
-	\end{figure}
-	\begin{figure}
-		\includegraphics[width=\textwidth]{table_bc_miplip.png}
-		\caption{Comparison on miplib set}
-	\end{figure}
+	\frametitle{Miplib set}
+%	\begin{figure}
+%		\includegraphics[width=\textwidth]{table_bc_random.png}
+%		\caption{Comparison on random set}
+%	\end{figure}
+%	\begin{figure}
+%		\includegraphics[width=\textwidth]{table_bc_miplip.png}
+%		\caption{Comparison on miplib set}
+%	\end{figure}
+\centering
+\includegraphics[height=0.8\textheight]{run-times.pdf}
 \end{frame}
 \end{document}
