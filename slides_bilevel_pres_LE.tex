@@ -134,8 +134,8 @@
 \begin{frame}
 	\frametitle{Assumptions}
 	\begin{itemize}
-		\item No upper level constraints
 		\item Optimistic approach
+		\item No upper level constraints
 	\end{itemize}
 \end{frame}
 
@@ -144,7 +144,7 @@
 	\begin{itemize}
 		\item \textit{Constrained Region}
 		\begin{equation*}
-		S = \{(x,y) \ | \ x \in \mathbb{Z}^m_+, y \in \mathbb{Z}^m_+, Cx+Dy \le e, Ax + By \le b \}
+		S = \{(x,y) \ | \ x \in \mathbb{Z}^n_+, y \in \mathbb{Z}^m_+, Cx+Dy \le e, Ax + By \le b \}
 		\end{equation*}
 		\item \textit{Followers Feasible Set}
 		\begin{equation*}
@@ -202,33 +202,9 @@
 	\begin{itemize}
 		\item Solve (SLP). Get an integer solution $(\bar x, \bar y)$.
 		\item If $(\bar x, \bar y)$ is bilevel infeasible, add valid inequality to eliminate bilevel-infeasible solutions at $\bar x$.
-		\item Valid inequality is non linear but can be reformulated as bilevel and linear
-		\item Cut turns (SLP) into bilevel problem with continuous follower variables. 
-		\item This can again be transformed into a single-level problem
+		\item Valid inequality is non linear but can be reformulated
 	\end{itemize}
 \end{frame}
-
-\begin{frame}
-	\frametitle{Example Cutting Plane Method}
-	\begin{columns}[T] % align columns
-		\begin{column}{.48\textwidth}
-			\input{example_cp.tikz}
-		\end{column}%
-		\hfill%
-		\begin{column}{.48\textwidth}
-			\begin{alignat*}{2}
-			\min_{x,y} F(&x,y) =&& 2x + 7y \\
-			\text{s.t.}\quad &x \in \mathbb{Z}_+&& \\
-			&y \in \arg&& \min_y f(y) = -y \\
-			&\text{s.t.}\quad &&2x - 8y \ge -25 \\
-			& &&7x + 10y \le 60 \\
-			& &&2x + y \ge 6 \\
-			& &&11x - 4y \le 31 \\
-			& &&y \in \mathbb{Z}_+ 
-			\end{alignat*}
-		\end{column}%
-	\end{columns}
-	\end{frame}
 	
 \begin{frame}
 	\frametitle{The valid inequality}
@@ -237,13 +213,13 @@
 		\item There exists $(\bar x, \hat y)$ (bilevel feasible) with $f(\hat y) < f(\bar y)$.
 		\item Valid inequality is 
 		\begin{equation}
-			f(y) \le f(\hat y) + L \|x-\bar x\|_{\infty}.
+			f(y) \le f(\hat y) + L \|x-\bar x\|_{\infty}. \label{eq:cut}
 		\end{equation}
 	\end{itemize}
 \end{frame}
 \begin{frame}
 	\frametitle{Reformulation I}
-	 The inequality ??? can be reformulated as 
+	 The inequality \eqref{eq:cut} can be reformulated as 
 		\begin{align*}
 			f(y) \le f(\hat y) + L \hat z 
 		\end{align*}
@@ -268,6 +244,38 @@
 & && z \in \mathbb{R}
 \end{alignat*}
 This can again be reformulated as a single level problem.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example Cutting Plane Method}
+	\begin{columns}[T] % align columns
+		\begin{column}{.48\textwidth}
+			\input{example_cp.tikz}
+		\end{column}%
+		\hfill%
+		\begin{column}{.48\textwidth}
+			\begin{alignat*}{2}
+				\min_{x,y} F(&x,y) =&& 2x + 7y \\
+				\text{s.t.}\quad &x \in \mathbb{Z}_+&& \\
+				&y \in \arg&& \min_y f(y) = -y \\
+				&\text{s.t.}\quad &&2x - 8y \ge -25 \\
+				& &&7x + 10y \le 60 \\
+				& &&2x + y \ge 6 \\
+				& &&11x - 4y \le 31 \\
+				& &&y \in \mathbb{Z}_+ 
+			\end{alignat*}
+		\end{column}%
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Modified Method}
+	\begin{itemize}
+		\item Each cut inroduces subproblem with $2n$ constraints
+		\item $(\bar x, \bar y)$ was cut off, next solution $(x',y')$ is far from  $(\bar x, \bar y)$
+		\item Then replace the subroblem $P_{\bar z}$ with $F(x,y) \ge F(x',y')$
+		\item No subproblem is dropped twice.
+	\end{itemize}
 \end{frame}
 
 \section{A Branch and Cut Algorithm}
@@ -312,14 +320,14 @@ This can again be reformulated as a single level problem.
 	\begin{itemize}
 		\item[Step 0]Determine $S'$ and $S''$.
 		\item[Step 1]Solve the subproblem $(DBLP')$ induced by $S'$. Use continuous single-level relaxation. 
-		\item[Step 2]Branch if solution is not integral, add cut if solution is integral but not bilevel feasible
+		\item[Step 2]Branch if solution is not integral, add linear cut if solution is integral but not bilevel feasible
 		\item[Step 3]Compute $LB''$ for problem $(DBLP'')$ induced by $S''$. If this is worse than the $UB$ found before, stop.
 		Otherwise solve $(DBLP'')$.
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Proposed Variant}
+	\frametitle{Proposed Variant - Hybrid Branch and Cut}
 	\begin{itemize}
 		\item Use branch and cut to solve $(DBLP')$
 		\begin{itemize}
@@ -378,5 +386,13 @@ This can again be reformulated as a single level problem.
 %	\end{figure}
 \centering
 \includegraphics[height=0.8\textheight]{run-times.pdf}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Summary}
+	\begin{itemize}
+		\item Two new exact algorithms for solving DBLP
+		\item Especially Cutting Plane method is performing well.
+	\end{itemize}
 \end{frame}
 \end{document}

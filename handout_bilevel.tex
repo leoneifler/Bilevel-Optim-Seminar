@@ -15,7 +15,9 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass{article}
-
+\usepackage{geometry}
+\geometry{a4paper, top=35mm, left=35mm, right=35mm, bottom=30mm,
+	headsep=10mm, footskip=12mm}
 \usepackage[utf8]{inputenc} %unix-windows-compatible
 \usepackage{commath}
 \usepackage{fancyhdr} % Required for custom headers
@@ -85,12 +87,6 @@ showstringspaces=false
 
 \title{
 	\centering
-	\begin{figure*}[!hb]
-		\begin{minipage}{1\textwidth}
-			\hspace*{-.06\linewidth}
-		\end{minipage} 
-	\end{figure*}
-	\vspace{5cm}
 	{\huge\textbf{\Title}}\\ 
 	\vspace{1cm}
 	{\huge{\Seminar}\\}
@@ -105,7 +101,7 @@ showstringspaces=false
 \begin{document}
 	
 	\maketitle
-	\newpage
+	\vspace{1cm}
 %----------------------------------------------------------------------------------------
 %	TABLE OF CONTENTS
 %----------------------------------------------------------------------------------------
@@ -124,6 +120,7 @@ We present the work of Caramia and Mari \cite{Caramia2015}, who introduced two n
 		
 The first Algorithm is a cutting plane method, where each added inequality separates multiple bilevel-infeasible solutions. The second is a branch and cut method that exploits a geometric property of bilevel linear problems. 
 The computational results are compared to the method proposed by DeNegre and Ralphs \cite{DeNegre2009}.
+\newpage
 
 \section{Preliminaries}
 
@@ -184,7 +181,6 @@ The advantage of this cutting plane method is that a large number of bilevel-inf
 
 A possible modification to reduce the number of added follower problems is to remove added inequalities under certain conditions. If a bilevel-infeasible solution $(\bar x, \bar y)$ was cut off and the next bilevel-infeasible solution $(x',y')$ is far from  $(\bar x, \bar y)$ in $S$, then it is reasonable that the descent direction of the objective leads away from $(\bar x, \bar y)$.
 Therefore the subproblem $P_{\bar z}$ that cut off $(\bar x, \bar y)$ is replaced by the inequality $F(x,y) \ge F(x',y')$. To avoid cycling, if $P_{\bar z}$ is reintroduced at some point, it will not be dropped again.
-\newpage
 
 \section{A branch and cut algorithm}
 
@@ -223,7 +219,7 @@ Then the framework for the branch and cut algorithm is the following
 		Otherwise solve $(DBLP'')$.
 	\end{itemize}
 	
-		\begin{figure}[H]
+		\begin{figure}
 						\centering
 			\input{inducible-handout.tikz}
 			\caption{Example of splitting of $S$. Inducible region of linear problem is (A - B - C)}
@@ -241,17 +237,17 @@ Two sets of test instances were used: a set of random instances and a set of mod
 The cutting plane methods need on average $90\%$ less computational time than (DN\_CP). For the branch and cut algorithms both (BC) and (HBC) were faster than (DN\_BC), where the difference in running time ranges from $-0.5\%$ to $-70.6\%$. The overall comparison on both sets can be seen in the following two diagrams. Overall, the cutting plane methods were the best-performing on all instances.
 
 
-\begin{figure}
+\begin{figure}[H]
 	\centering
-	\includegraphics[width = 0.45\textheight]{run-times_2.pdf}
-	\caption{Computational comparison for random set}
+		\includegraphics[width = 0.8\textwidth]{run-times-random.pdf}
+	\caption{Computational times on random set in seconds.}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
 	\centering
-	\includegraphics[height = 0.45\textheight]{run-times.pdf}
-	\caption{Computational comparison for miplib set}
+	\includegraphics[width = 0.8\textwidth]{run-times_miplib.pdf}
+	\caption{Computational times on miplib set in seconds.}
 \end{figure}
-	\newpage
+	\vspace{1cm}
 	\bibliographystyle{abbrv}
 	\bibliography{Bibliography}
 \end{document}
